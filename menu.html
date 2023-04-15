@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>檔案上傳和篩選範例</title>
+</head>
+
+<body>
+    <form>
+        <input type="file" id="file-input">
+        <button type="button" onclick="handleUpload()">上傳檔案</button>
+    </form>
+    <hr>
+    <div id="table-container"></div>
+
+    <script>
+        function handleUpload() {
+            // 獲取檔案上傳元素
+            var fileInput = document.getElementById('file-input');
+            var file = fileInput.files[0];
+
+            // 讀取檔案數據
+            var reader = new FileReader();
+            reader.onload = function (event) {
+                var content = event.target.result;
+
+                // 解析檔案數據   //rowValue是檔案用trim去掉空白+split分割->整理成字串陣列之後給map整理的東東->map會整理成新的陣列
+                var rows = content.trim().split('\n').map(rowValue => rowValue.split(','));
+
+                console.log(rows);
+                // 篩選檔案數據
+                var filteredRows = [];
+                rows.forEach(row => {
+                    //對應我的檔案內容
+                    var name = row[0];
+                    var price = row[1];
+                    var category = row[2];
+
+                    if (price < 100) {
+                        // 滿足價格小於100的條件
+                        filteredRows.push([name, price, category]);
+                    }
+                });
+                // 生成HTML表格並顯示
+                var tableHtml = '<table>';
+                tableHtml += '<tr><th>餐點名稱</th><th>價格</th><th>分類</th></tr>';
+                filteredRows.forEach(row => {
+                    tableHtml += '<tr><td>' + row[0] + '</td><td>' + row[1] + '</td><td>' + row[2] + '</td></tr>';
+                });
+                tableHtml += '</table>';
+                document.getElementById('table-container').innerHTML = tableHtml;
+            };
+            reader.readAsText(file);
+        }
+    </script>
+</body>
+
+</html>
